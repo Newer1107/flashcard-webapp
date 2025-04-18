@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Admin Navbar -->
+        <nav class="bg-gray-800 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+                <div>
+                    <a href="/" class="mr-4 hover:text-gray-300">
+                        <i class="fas fa-home"></i> Main Site
+                    </a>
+                    <a href="/logout" class="hover:text-gray-300">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto p-6">
+            <h2 class="text-xl font-semibold mb-6">User Management</h2>
+            
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <% users.forEach(user => { %>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap"><%= user.id %></td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="/admin/user/<%= user.id %>/flashcards" class="text-blue-600 hover:text-blue-800">
+                                    <%= user.username %>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap"><%= user.email %></td>
+                            <td class="px-6 py-4 whitespace-nowrap"><%= new Date(user.created_at).toLocaleDateString() %></td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <% if (user.is_admin) { %>
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        Admin
+                                    </span>
+                                <% } else { %>
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        User
+                                    </span>
+                                <% } %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <form action="/admin/toggle-admin/<%= user.id %>" method="POST" class="inline">
+                                    <button type="submit" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                        <% if (user.is_admin) { %>
+                                            <i class="fas fa-user-minus"></i> Revoke Admin
+                                        <% } else { %>
+                                            <i class="fas fa-user-shield"></i> Make Admin
+                                        <% } %>
+                                    </button>
+                                </form>
+                                <form action="/admin/delete-user/<%= user.id %>" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this user and all their flashcards?');">
+                                    <button type="submit" class="text-red-600 hover:text-red-900">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

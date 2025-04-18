@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex justify-center items-center min-h-screen">
+<div class="bg-gray-800 p-8 rounded shadow-md max-w-lg w-full">
+    <h2 class="text-2xl font-bold mb-4 text-center">🧠 Quiz Time!</h2>
+
+    <form id="quizForm">
+        <input type="hidden" name="id" value="<%= flashcard.id %>">
+        <p class="mb-4"><strong>Question:</strong> <%= flashcard.question %></p>
+        <input type="text" name="userAnswer" placeholder="Your Answer" required
+               class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded mb-4">
+        <button type="submit" id="clearButton"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">Submit</button>
+    </form>
+
+    <!-- Results will appear here -->
+    <div id="result" class="mt-6 text-gray-200 whitespace-pre-line"></div>
+
+    <div class="text-center mt-6">
+        <a href="/quiz/start" class="text-blue-400 hover:underline">🔄 New Question</a> |
+        <a href="/flashcards/dashboard" class="text-blue-400 hover:underline">📋 Dashboard</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('quizForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const data = new URLSearchParams(formData);
+
+        const res = await fetch('/quiz/answer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: data
+        });
+
+        const responseJson = await res.json();
+        
+        // Update the result message (explanation)
+        document.getElementById('result').innerText = responseJson.message;
+
+        // If there are more questions, update the flashcard, otherwise end the quiz
+        if (!responseJson.finished) {
+            setTimeout(() => {
+                document.getElementById('result').innerText = ''; // Clear the result message
+            }, 5000);
+            document.getElementById('clearButton').addEventListener('click', function() {
+                // Get the input element
+                var input = document.getElementById('userAnswer');
+                setTimeout(function() {
+                    input.value = ''; // Clear the input
+                }, 3000);
+            });
+            const nextFlashcard = responseJson.flashcard;
+            document.querySelector('input[name="id"]').value = nextFlashcard.id;
+            document.querySelector('p').innerText = `Question: ${nextFlashcard.question}`;
+        } else {
+            // Optionally, handle the case when the quiz is finished
+            document.querySelector('p').innerText = 'Quiz Finished!';
+        }
+    });
+</script>
+
+</body>
+</html>

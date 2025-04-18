@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Flashcards | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="max-w-4xl mx-auto p-6">
+        <!-- Back button -->
+        <a href="/admin/dashboard" class="inline-block mb-4 text-blue-400 hover:text-blue-300">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        
+        <!-- User info -->
+        <div class="bg-gray-800 p-4 rounded-lg mb-6">
+            <h1 class="text-2xl font-bold">
+                Flashcards by <span class="text-blue-400"><%= user.username %></span>
+            </h1>
+            <p class="text-gray-400">User ID: <%= user.id %></p>
+            <p class="mt-2">
+                Total flashcards: <span class="font-bold"><%= flashcards.length %></span>
+            </p>
+        </div>
+
+        <!-- Flashcards list -->
+        <% if (flashcards.length === 0) { %>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <p>This user hasn't created any flashcards yet.</p>
+            </div>
+        <% } else { %>
+            <div class="space-y-4">
+                <% flashcards.forEach(card => { %>
+                    <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold text-blue-400">Q:</p>
+                                <p class="mb-3"><%= card.question %></p>
+                                <p class="font-bold text-green-400">A:</p>
+                                <p><%= card.answer %></p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <form action="/flashcards/delete/<%= card.id %>" method="POST">
+                                    <button type="submit" class="text-red-400 hover:text-red-300" 
+                                        onclick="return confirm('Delete this flashcard?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

@@ -4,6 +4,28 @@
     <title>Flashcard Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<script>
+    function toggleAnswer(cardId) {
+        const answerElement = document.getElementById(`answer-${cardId}`);
+        const placeholderElement = document.getElementById(`placeholder-${cardId}`);
+        const eyeIcon = document.getElementById(`eye-${cardId}`);
+        
+        if (answerElement.classList.contains('invisible')) {
+            // Show answer
+            answerElement.classList.remove('invisible');
+            answerElement.classList.add('visible');
+            placeholderElement.classList.add('invisible');
+            eyeIcon.innerHTML = `<path d="M13.875 18.825A10.05 10.05 0 0110 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0110 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`;
+        } else {
+            // Hide answer
+            answerElement.classList.add('invisible');
+            answerElement.classList.remove('visible');
+            placeholderElement.classList.remove('invisible');
+            eyeIcon.innerHTML = `<path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />`;
+        }
+    }
+</script>
 <body class="bg-gray-900 text-white font-sans min-h-screen">
 <div class="max-w-4xl mx-auto p-6">
     <h1 class="text-3xl font-bold mb-4">📚 Flashcard Dashboard</h1>
@@ -45,29 +67,33 @@
     </div>
 
     <!-- Rest of your existing dashboard content -->
-    <div class="bg-gray-800 p-4 rounded shadow">
-        <h2 class="text-xl font-semibold mb-3">Your Flashcards</h2>
-        <% if (flashcards.length === 0) { %>
-            <p>No flashcards yet.</p>
-        <% } else { %>
-            <div class="space-y-3">
-                <% flashcards.forEach(card => { %>
-                    <div class="border border-gray-700 p-3 rounded bg-gray-700 relative">
-                        <p><strong>Q:</strong> <%= card.question %></p>
-                        <p><strong>A:</strong> <%= card.answer %></p>
-                        <form method="POST" action="/flashcards/delete/<%= card.id %>" class="absolute top-2 right-2">
-                            <button type="submit" class="text-red-400 hover:text-red-300" onclick="return confirm('Are you sure you want to delete this flashcard?')">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </form>
+    <div class="space-y-3">
+        <% flashcards.forEach(card => { %>
+            <div class="border border-gray-700 p-3 rounded bg-gray-700 relative">
+                <p><strong>Q:</strong> <%= card.question %></p>
+                <div class="flex items-start mt-2">
+                    <strong class="mr-2">A:</strong>
+                    <div class="flex-1">
+                        <span id="answer-<%= card.id %>" class="invisible absolute"> <%= card.answer %></span>
+                        <span id="placeholder-<%= card.id %>" class="text-gray-400">••••••••••</span>
                     </div>
-                <% }); %>
+                    <button onclick="toggleAnswer('<%= card.id %>')" class="ml-2 text-blue-400 hover:text-blue-300">
+                        <svg id="eye-<%= card.id %>" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <form method="POST" action="/flashcards/delete/<%= card.id %>" class="absolute top-2 right-2">
+                    <button type="submit" class="text-red-400 hover:text-red-300" onclick="return confirm('Are you sure you want to delete this flashcard?')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </form>
             </div>
-        <% } %>
+        <% }); %>
     </div>
-
     <div class="mt-6 bg-gray-800 p-4 rounded shadow">
         <h2 class="text-xl font-semibold mb-3">Add a New Flashcard</h2>
         <form method="POST" action="/flashcards/add" class="space-y-3">

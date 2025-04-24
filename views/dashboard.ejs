@@ -11,13 +11,11 @@
         const eyeIcon = document.getElementById(`eye-${cardId}`);
         
         if (answerElement.classList.contains('invisible')) {
-            // Show answer
             answerElement.classList.remove('invisible');
             answerElement.classList.add('visible');
             placeholderElement.classList.add('invisible');
             eyeIcon.innerHTML = `<path d="M13.875 18.825A10.05 10.05 0 0110 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0110 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`;
         } else {
-            // Hide answer
             answerElement.classList.add('invisible');
             answerElement.classList.remove('visible');
             placeholderElement.classList.remove('invisible');
@@ -39,9 +37,9 @@
         <a href="/admin/dashboard" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Open Admin Panel</a>
     </div>
 
-    <!-- Import Modal (hidden by default) -->
-    <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-gray-800 p-6 rounded shadow-lg max-w-2xl w-full">
+    <!-- Import Modal -->
+    <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 z-50">
+        <div id="importBox" class="bg-gray-800 p-6 rounded shadow-lg max-w-2xl w-full transform scale-95 opacity-0 transition-all duration-300">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Import Flashcards from CSV</h2>
                 <button onclick="closeImportModal()" class="text-gray-400 hover:text-white">
@@ -66,7 +64,7 @@
         </div>
     </div>
 
-    <!-- Rest of your existing dashboard content -->
+    <!-- Flashcards -->
     <div class="space-y-3">
         <% flashcards.forEach(card => { %>
             <div class="border border-gray-700 p-3 rounded bg-gray-700 relative">
@@ -94,6 +92,8 @@
             </div>
         <% }); %>
     </div>
+
+    <!-- Add Flashcard -->
     <div class="mt-6 bg-gray-800 p-4 rounded shadow">
         <h2 class="text-xl font-semibold mb-3">Add a New Flashcard</h2>
         <form method="POST" action="/flashcards/add" class="space-y-3">
@@ -105,17 +105,22 @@
 </div>
 
 <script>
+    const importModal = document.getElementById('importModal');
+    const importBox = document.getElementById('importBox');
+
     function openImportModal() {
-        document.getElementById('importModal').classList.remove('hidden');
+        importModal.classList.remove('opacity-0', 'pointer-events-none');
+        importBox.classList.remove('scale-95', 'opacity-0');
     }
-    
+
     function closeImportModal() {
-        document.getElementById('importModal').classList.add('hidden');
+        importBox.classList.add('scale-95', 'opacity-0');
+        importModal.classList.add('opacity-0', 'pointer-events-none');
     }
-    
-    // Close modal when clicking outside of it
-    document.getElementById('importModal').addEventListener('click', function(e) {
-        if (e.target === this) {
+
+    // Close on clicking outside
+    importModal.addEventListener('click', function(e) {
+        if (e.target === importModal) {
             closeImportModal();
         }
     });
